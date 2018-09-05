@@ -1,0 +1,19 @@
+// Copyright (c) 2017-2018 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+// Fails because it uses queuefamily scope but different queue families
+NEWQF
+NEWWG
+NEWSG
+NEWTHREAD
+st.av.scopeqf.sc0 x = 1
+st.atom.rel.scopeqf.sc0.semsc0 y = 1
+NEWQF
+NEWWG
+NEWSG
+NEWTHREAD
+ld.atom.acq.scopeqf.sc0.semsc0 y = 1
+ld.vis.scopeqf.sc0 x
+NOSOLUTION consistent[X] && #dr=0
+SATISFIABLE (#RFINIT=0) && (!consistent[X] || #dr>0)

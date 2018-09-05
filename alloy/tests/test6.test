@@ -1,0 +1,25 @@
+// Copyright (c) 2017-2018 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+// Pass
+NEWWG
+NEWSG
+NEWTHREAD
+st.av.scopedev.sc0 a = 1
+cbar.acq.rel.scopewg.semsc0 0
+NEWSG
+NEWTHREAD
+cbar.acq.rel.scopewg.semsc0 0
+cbar.acq.rel.scopedev.semsc0 1
+NEWWG
+NEWSG
+NEWTHREAD
+cbar.acq.rel.scopedev.semsc0 1
+cbar.acq.rel.scopewg.semsc0 2
+NEWSG
+NEWTHREAD
+cbar.acq.rel.scopewg.semsc0 2
+ld.vis.scopedev.sc0 a
+SATISFIABLE consistent[X] && #dr=0
+NOSOLUTION (#RFINIT=0) && (!consistent[X] || #dr>0)

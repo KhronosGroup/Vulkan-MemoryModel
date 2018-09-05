@@ -1,0 +1,19 @@
+// Copyright (c) 2017-2018 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+// There's a WaR hazard between an atomic load and a non-atomic store.
+// This test exercises that using only semsc0 is sufficient to synchronize
+// them, because the atomic also has semsc0 in its semantics.
+NEWWG
+NEWSG
+NEWTHREAD
+ld.atom.acq.scopewg.sc1.semsc0 x = 0
+st.atom.rel.scopewg.sc0.semsc0 y = 1
+NEWSG
+NEWTHREAD
+ld.atom.acq.scopewg.sc0.semsc0 y = 1
+st.av.scopedev.sc0 z = 1
+SLOC x z
+SATISFIABLE consistent[X] && #dr=0
+NOSOLUTION !consistent[X] || #dr>0

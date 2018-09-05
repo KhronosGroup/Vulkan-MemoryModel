@@ -1,0 +1,16 @@
+// Copyright (c) 2017-2018 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+// Exercise release sequence. RMW in another thread reads the atomic before store in the same thread
+NEWWG
+NEWSG
+NEWTHREAD
+st.atom.rel.scopewg.sc0.semsc0 y = 1
+st.atom.scopewg.sc0 y = 3
+NEWSG
+NEWTHREAD
+rmw.scopewg.sc0 y = 1 2
+SATISFIABLE consistent[X] && #dr=0
+// the release and the RMW are in the release sequence
+SATISFIABLE consistent[X] && (#rs=2)

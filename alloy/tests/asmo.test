@@ -1,0 +1,24 @@
+// Copyright (c) 2017-2018 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+// Test that threads 3 and 4 can't read updates to x in conflicting order
+NEWWG
+NEWSG
+NEWTHREAD
+st.atom.scopedev.sc0 x = 1
+NEWWG
+NEWSG
+NEWTHREAD
+st.atom.scopedev.sc0 x = 2
+NEWWG
+NEWSG
+NEWTHREAD
+ld.atom.scopedev.sc0 x = 1
+ld.atom.scopedev.sc0 x = 2
+NEWWG
+NEWSG
+NEWTHREAD
+ld.atom.scopedev.sc0 x = 2
+ld.atom.scopedev.sc0 x = 1
+NOSOLUTION consistent[X]

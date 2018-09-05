@@ -1,0 +1,13 @@
+// Copyright (c) 2017-2018 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+// Mixing atomics and noncoherent/private load/store in the same thread
+NEWWG
+NEWSG
+NEWTHREAD
+st.nonpriv.sc0 y = 1
+rmw.scopewg.sc0 y = 1 2
+ld.sc0 y = 2
+SATISFIABLE consistent[X] && #dr=0
+NOSOLUTION (#RFINIT=0) && (!consistent[X] || #dr>0)

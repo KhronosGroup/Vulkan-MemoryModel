@@ -1,0 +1,17 @@
+// Copyright (c) 2017-2018 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+// Fails because the scope of the av/vis ops aren't big enough
+NEWWG
+NEWSG
+NEWTHREAD
+st.av.scopewg.sc0 x = 1
+st.atom.rel.scopedev.sc0.semsc0 y = 1
+NEWWG
+NEWSG
+NEWTHREAD
+ld.atom.acq.scopedev.sc0.semsc0 y = 1
+ld.vis.scopewg.sc0 x
+NOSOLUTION consistent[X] && #dr=0
+SATISFIABLE (#RFINIT=0) && (!consistent[X] || #dr>0)

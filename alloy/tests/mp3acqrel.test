@@ -1,0 +1,21 @@
+// Copyright (c) 2017-2018 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+// Message passing between three threads where the second thread uses AcquireRelease
+NEWWG
+NEWSG
+NEWTHREAD
+st.av.scopedev.sc0 x = 1
+st.atom.rel.scopedev.sc0.semsc0 y = 1
+NEWWG
+NEWSG
+NEWTHREAD
+rmw.acq.rel.scopedev.sc0.semsc0 y = 1 2
+NEWWG
+NEWSG
+NEWTHREAD
+ld.atom.acq.scopedev.sc0.semsc0 y = 2
+ld.vis.scopedev.sc0 x
+SATISFIABLE consistent[X] && #dr=0
+NOSOLUTION (#RFINIT=0 && is_acyclic[X.asmo+X.rf]) && (!consistent[X] || #dr>0)

@@ -1,0 +1,15 @@
+// Copyright (c) 2017-2018 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+// Fails because there is no availability operation from the atomic
+NEWWG
+NEWSG
+NEWTHREAD
+st.atom.scopewg.sc0 a = 1
+NEWSG
+NEWTHREAD
+ld.atom.scopewg.sc0 a = 1
+ld.vis.scopedev.sc0 a
+NOSOLUTION consistent[X] && #dr=0
+SATISFIABLE (#RFINIT=0) && (!consistent[X] || #dr>0)
