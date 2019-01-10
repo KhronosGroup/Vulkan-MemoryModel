@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 Khronos Group. This work is licensed under a
+// Copyright (c) 2017-2019 Khronos Group. This work is licensed under a
 // Creative Commons Attribution 4.0 International License; see
 // http://creativecommons.org/licenses/by/4.0/
 
@@ -94,6 +94,7 @@ sig Exec {
   rf : E->E, // reads-from
   asmo: E->E, // A's scoped modification order
   rs : E->E, // release sequence
+  hypors : E->E, // hypothetical release sequence
   fr: E->E, // from-read
   sw: E->E, // synchronizes-with
   ithbsemsc0 : E->E, // inter-thread-happens-before (templated by storage class mask)
@@ -286,8 +287,11 @@ sig Exec {
 
   // Release sequence starts with an atomic release followed by the reflexive
   // transitive closure of immediate asmo limited to RMWs. Leaving out C++'s
-  // same-thread-atomic-write aspect of release sequences
+  // same-thread-atomic-write aspect of release sequences. hypors is the same
+  // for "hypothetical release sequences" where the release happens in a fence
+  // earlier in the same invocation.
   rs = (stor[REL&A]) . *((imm[asmo]) . (stor[R&W]))
+  hypors = (stor[W&A]) . *((imm[asmo]) . (stor[R&W]))
 
   // From-read (aka reads-before) are (read,write) pairs where the read reads a
   // value before the write in atomic modification order (i.e. the inverse of
@@ -300,11 +304,11 @@ sig Exec {
        // atomic->atomic
        ((stor[REL&A]) . rs . (rf & mutordatom) . (stor[ACQ&A])) +
        // fence->atomic
-       ((stor[REL&F]) . posemtosc . (stor[A&W]) . (rc[rs]) . (rf & mutordatom) . (stor[ACQ&A])) +
+       ((stor[REL&F]) . posemtosc . (stor[A&W]) . hypors . (rf & mutordatom) . (stor[ACQ&A])) +
        // atomic->fence
        ((stor[REL&A]) . rs . (rf & mutordatom) . (stor[A&R]) . posctosem . (stor[ACQ&F])) +
        // fence->fence
-       ((stor[REL&F]) . posemtosc . (stor[A&W]) . (rc[rs]) . (rf & mutordatom) . (stor[A&R]) . posctosem . (stor[ACQ&F])) +
+       ((stor[REL&F]) . posemtosc . (stor[A&W]) . hypors . (rf & mutordatom) . (stor[A&R]) . posctosem . (stor[ACQ&F])) +
        // fence->cbar->cbar->fence
        // (stor[CBAR]) terms are redundant because scbarinst is an equivalence relation on scbarinst,
        // but they make the sequence of instructions more clear.
