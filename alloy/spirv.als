@@ -309,7 +309,7 @@ sig Exec {
 
   ithbsemsc1 = ^(ssw +
                  (stor[SEMSC1]).sw.(stor[SEMSC1]) +
-                 (stor[SC0+SEMSC1]).po.(stor[REL&SEMSC1]) +
+                 (stor[SC1+SEMSC1]).po.(stor[REL&SEMSC1]) +
                  (stor[ACQ&SEMSC1]).po.(stor[SC1+SEMSC1]))
 
   ithbsemsc01 = ^(ssw +
