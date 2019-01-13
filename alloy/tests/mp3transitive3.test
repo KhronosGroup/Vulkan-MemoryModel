@@ -1,0 +1,25 @@
+// Copyright (c) 2017-2018 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+// Invocation 0 makes the write x=1 available to invocation 1.
+// Invocation 1 then does a bulk av operation with device scope.
+// Invocation 2 does a bulk vis op with device scope.
+NEWWG
+NEWSG
+NEWTHREAD
+st.av.scopewg.sc0 x = 1
+cbar.acq.rel.scopewg.semsc0 0
+NEWSG
+NEWTHREAD
+cbar.acq.rel.scopewg.semsc0 0
+st.atom.rel.scopedev.sc1.semsc0.semsc1.semav z = 1
+NEWWG
+NEWSG
+NEWTHREAD
+ld.atom.acq.scopedev.sc1.semsc0.semsc1 z = 1
+ld.vis.scopedev.sc0 x
+SATISFIABLE consistent[X] && #dr=0
+NOSOLUTION (#RFINIT=0) && (!consistent[X] || #dr>0)
+NOSOLUTION NOCHAINS consistent[X] && #dr=0
+SATISFIABLE NOCHAINS (#RFINIT=0) && (!consistent[X] || #dr>0)

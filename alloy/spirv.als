@@ -77,6 +77,8 @@ sig Exec {
   ssw : E->E, // system-synchronizes-with
   scbarinst : E->E, // same control barrier dynamic instance
   pgmsref : E->E, // same reference specified in program source (see also sref)
+  chains : E->E, // What availability/visibility chains are supported based on device state.
+                 // chains is either EV->EV (if chains are supported) or stor[EV] (if not)
 
   // derived static relations
   po : E->E, // program order (^immpo)
@@ -98,6 +100,16 @@ sig Exec {
   ithbsemsc1 : E->E,
   ithbsemsc01 : E->E,
   hb: E->E, // happens-before
+  avsg: E->E, // chain of instructions producing subgroup availability
+  avwg: E->E, // chain of instructions producing workgroup availability
+  avqf: E->E, // chain of instructions producing queue family availability
+  avsh: E->E, // chain of instructions producing shader availability
+  avdv: E->E, // device availability
+  vissg: E->E, // chain of instructions producing subgroup visibility
+  viswg: E->E, // chain of instructions producing workgroup visibility
+  visqf: E->E, // chain of instructions producing queue family visibility
+  vissh: E->E, // chain of instructions producing shader visibility
+  visdv: E->E, // device visibility
   locord: E->E, // location-ordered
   dr: E->E, // data-race
   visto: E->E, // visible-to
@@ -320,21 +332,38 @@ sig Exec {
   // happens-before = ithb<SC> or program order
   hb = ithbsemsc0 + ithbsemsc1 + ithbsemsc01 + po
 
+  // Chains of instructions that produce the desired availability/visibility.
+  // Example: An AVWG that happens before an AVSH in the same workgroup is
+  // enough to make the original write available to the shader domain.
+  // "chains & ..." effectively "turns off" nontrivial chains when the feature
+  // is not supported by ANDing with the identity relation.
+  avsg = stor[AVSG]
+  avwg = (chains & (rc[avsg . (hb & ssg & avvisinc)])) . (stor[AVWG])
+  avqf = (chains & (rc[avsg . (hb & ssg & avvisinc)]) . (rc[avwg . (hb & swg & avvisinc)])) . (stor[AVQF])
+  avsh = (chains & (rc[avsg . (hb & ssg & avvisinc)]) . (rc[avwg . (hb & swg & avvisinc)]) . (rc[avqf . (hb & sqf & avvisinc)])) . (stor[AVSHADER])
+  avdv = stor[AVDEVICE]
+
+  vissg = stor[VISSG]
+  viswg = (stor[VISWG])     . (chains & (rc[(hb & ssg & avvisinc) . vissg]))
+  visqf = (stor[VISQF])     . (chains & (rc[(hb & swg & avvisinc) . viswg]) . (rc[(hb & ssg & avvisinc) . vissg]))
+  vissh = (stor[VISSHADER]) . (chains & (rc[(hb & sqf & avvisinc) . visqf]) . (rc[(hb & swg & avvisinc) . viswg]) . (rc[(hb & ssg & avvisinc) . vissg]))
+  visdv = stor[VISDEVICE]
+
   locord = ((R+W)->(R+W)) & sloc & // relates memory accesses to the same location
            ((hb & sthd & sref) + // single-thread case
             asmo + // mutually-atomic case
             ((stor[R-PRIV]) . (hb & sloc) . (stor[R+W-PRIV])) + // RaR, WaR (non-private)
             ((stor[R]) . ^ssw . (stor[R+W])) + // RaR, WaR (any)
-            (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . (stor[AVSG]) . (hb & ssg) . (stor[W-PRIV]))) + // WaW (via subgroup instance domain)
-            (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . (stor[AVSG]) . (hb & ssg) . (stor[VISSG]) . (rc[po] & avvisinc) . (stor[R-PRIV]))) + // RaW (via subgroup instance domain)
-            (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . (stor[AVWG]) . (hb & swg) . (stor[W-PRIV]))) + // WaW (via workgroup instance domain)
-            (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . (stor[AVWG]) . (hb & swg) . (stor[VISWG]) . (rc[po] & avvisinc) . (stor[R-PRIV]))) + // RaW (via workgroup instance domain)
-            (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . (stor[AVQF]) . (hb & sqf) . (stor[W-PRIV]))) + // WaW (via workgroup instance domain)
-            (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . (stor[AVQF]) . (hb & sqf) . (stor[VISQF]) . (rc[po] & avvisinc) . (stor[R-PRIV]))) + // RaW (via queue family instance domain)
-            (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . (stor[AVSHADER]) . hb . (stor[W-PRIV]))) + // WaW (via shader domain)
-            (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . (stor[AVSHADER]) . hb . (stor[VISSHADER]) . (rc[po] & avvisinc) . (stor[R-PRIV]))) + // RaW (via shader domain)
-            ((stor[W]) . (hb & avvisinc) . (stor[AVDEVICE]) . hb . (stor[W])) + // WaW (via device domain)
-            ((stor[W]) . (hb & avvisinc) . (stor[AVDEVICE]) . hb . (stor[VISDEVICE]) . (hb & avvisinc) . (stor[R]))) // RaW (via device domain)
+            (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . avsg . (hb & ssg) .                               (stor[W-PRIV]))) + // WaW (via subgroup instance domain)
+            (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . avsg . (hb & ssg) . vissg . (rc[po] & avvisinc) . (stor[R-PRIV]))) + // RaW (via subgroup instance domain)
+            (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . avwg . (hb & swg) .                               (stor[W-PRIV]))) + // WaW (via workgroup instance domain)
+            (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . avwg . (hb & swg) . viswg . (rc[po] & avvisinc) . (stor[R-PRIV]))) + // RaW (via workgroup instance domain)
+            (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . avqf . (hb & sqf) .                               (stor[W-PRIV]))) + // WaW (via queue family instance domain)
+            (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . avqf . (hb & sqf) . visqf . (rc[po] & avvisinc) . (stor[R-PRIV]))) + // RaW (via queue family instance domain)
+            (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . avsh . (hb      ) .                               (stor[W-PRIV]))) + // WaW (via shader domain)
+            (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . avsh . (hb      ) . vissh . (rc[po] & avvisinc) . (stor[R-PRIV]))) + // RaW (via shader domain)
+            (        (stor[W])      . (hb & avvisinc)     . avdv . (hb      ) .                               (stor[W])) +       // WaW (via device domain)
+            (        (stor[W])      . (hb & avvisinc)     . avdv . (hb      ) . visdv . (hb & avvisinc)     . (stor[R])))        // RaW (via device domain)
 
   // data race = same location, at least one is a write, different threads,
   // not mutually ordered atomics, not location ordered either direction
