@@ -306,6 +306,8 @@ sig Exec {
        // fence->fence
        ((stor[REL&F]) . posemtosc . (stor[A&W]) . (rc[rs]) . (rf & inscope) . (stor[A&R]) . posctosem . (stor[ACQ&F])) +
        // fence->cbar->cbar->fence
+       // (stor[CBAR]) terms are redundant because scbarinst is an equivalence relation on scbarinst,
+       // but they make the sequence of instructions more clear.
        ((stor[REL&F]) . (rc[po]) . (stor[CBAR]) . (scbarinst & inscope - iden) . (stor[CBAR]) . (rc[po]) . (stor[ACQ&F])))
 
   // inter-thread-happens-before =
