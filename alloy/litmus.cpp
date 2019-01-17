@@ -71,7 +71,7 @@
 // must specify a scope" which, if violated, makes an execution trivially
 // unsatisfiable.
 //
-// "SLOC", "SSW", "SATISFIABLE", and "NOSOLUTION" are non-instruction
+// "SLOC", "SSW", "SATISFIABLE", "NOSOLUTION", and "NOCHAINS" are non-instruction
 // directives.
 //
 // "SLOC" takes two variable name strings and specifies that they access
@@ -92,6 +92,10 @@
 //
 // indicating that the program can be satisfied by a consistent execution
 // with no data races. Each line is an independent test.
+//
+// "NOCHAINS" can be put after SATISFIABLE or NOSOLUTION to indicate that
+// the test should run assuming the implementation does not support
+// availability and visibility chains with more than one element.
 //
 #include <algorithm>
 #include <sstream>
@@ -638,6 +642,13 @@ int main(int argc, char *argv[])
             line = line.substr(strlen("NOSOLUTION"));
             outreference << "NOSOLUTION\n";
         }
+
+        bool noChains = false;
+        if (line.find("NOCHAINS") != string::npos) {
+            noChains = true;
+            line = line.substr(line.find("NOCHAINS") + strlen("NOCHAINS"));
+        }
+
         outals << "pred gentest" << testnum << "[X:Exec] {\n";
         outals << "  #Exec = 1\n";
         outals << "  #E = " << numEvents << "\n";
@@ -651,6 +662,11 @@ int main(int argc, char *argv[])
         }
         outals << " : E {\n";
         outals << o.str();
+        if (noChains) {
+            outals << "    X.chains = stor[X.EV]\n";
+        } else {
+            outals << "    X.chains = (X.EV -> X.EV)\n";
+        }
         outals << "  }\n";
         outals << "  " << line << "\n";
         outals << "}\n";
