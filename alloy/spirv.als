@@ -272,7 +272,7 @@ sig Exec {
             (swg & ((SCOPEDEV+SCOPEQF+SCOPEWG) -> (SCOPEDEV+SCOPEQF+SCOPEWG))) +
             (ssg & ((SCOPEDEV+SCOPEQF+SCOPEWG+SCOPESG) -> (SCOPEDEV+SCOPEQF+SCOPEWG+SCOPESG)))
 
-  // mutually ordered atomics are to the same location and in scope
+  // mutually ordered atomics are to the same location and same reference and in scope
   mutordatom = (sloc & sref & (A -> A) & inscope) - iden
 
   posctosem = po & ((SC0 -> SEMSC0) + (SC1 -> SEMSC1))
@@ -298,13 +298,13 @@ sig Exec {
   // synchronizes-with is similar to C++, with an additional case for fence->cbar->cbar->fence
   sw = inscope & (
        // atomic->atomic
-       ((stor[REL&A]) . rs . (rf & inscope) . (stor[ACQ&A])) +
+       ((stor[REL&A]) . rs . (rf & mutordatom) . (stor[ACQ&A])) +
        // fence->atomic
-       ((stor[REL&F]) . posemtosc . (stor[A&W]) . (rc[rs]) . (rf & inscope) . (stor[ACQ&A])) +
+       ((stor[REL&F]) . posemtosc . (stor[A&W]) . (rc[rs]) . (rf & mutordatom) . (stor[ACQ&A])) +
        // atomic->fence
-       ((stor[REL&A]) . rs . (rf & inscope) . (stor[A&R]) . posctosem . (stor[ACQ&F])) +
+       ((stor[REL&A]) . rs . (rf & mutordatom) . (stor[A&R]) . posctosem . (stor[ACQ&F])) +
        // fence->fence
-       ((stor[REL&F]) . posemtosc . (stor[A&W]) . (rc[rs]) . (rf & inscope) . (stor[A&R]) . posctosem . (stor[ACQ&F])) +
+       ((stor[REL&F]) . posemtosc . (stor[A&W]) . (rc[rs]) . (rf & mutordatom) . (stor[A&R]) . posctosem . (stor[ACQ&F])) +
        // fence->cbar->cbar->fence
        // (stor[CBAR]) terms are redundant because scbarinst is an equivalence relation on scbarinst,
        // but they make the sequence of instructions more clear.
