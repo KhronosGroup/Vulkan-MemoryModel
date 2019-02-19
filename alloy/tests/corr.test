@@ -1,0 +1,26 @@
+// Copyright (c) 2017-2019 Khronos Group. This work is licensed under a
+// Creative Commons Attribution 4.0 International License; see
+// http://creativecommons.org/licenses/by/4.0/
+
+// CoRR litmus test. Coherence order for x is 1,2, and is "enforced" by the
+// second invocation observing it. The first invocation can't see the stores
+// out of order.
+NEWWG
+NEWSG
+NEWTHREAD
+ld.atom.scopedev.sc0 x = 2
+ld.atom.scopedev.sc0 x = 1
+NEWWG
+NEWSG
+NEWTHREAD
+ld.atom.scopedev.sc0 x = 1
+ld.atom.scopedev.sc0 x = 2
+NEWWG
+NEWSG
+NEWTHREAD
+st.atom.scopedev.sc0 x = 2
+NEWWG
+NEWSG
+NEWTHREAD
+st.atom.scopedev.sc0 x = 1
+NOSOLUTION consistent[X]
