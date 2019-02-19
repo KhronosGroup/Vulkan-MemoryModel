@@ -357,7 +357,6 @@ sig Exec {
 
   locord = ((R+W)->(R+W)) & sloc & // relates memory accesses to the same location
            ((hb & sthd & sref) + // single-thread case
-            asmo + // mutually-atomic case
             ((stor[R-PRIV]) . hb . (stor[R+W-PRIV])) + // RaR, WaR (non-private)
             ((stor[R]) . ^ssw . (stor[R+W])) + // RaR, WaR (any)
             (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . avsg . (hb & ssg) .                               (stor[W-PRIV]))) + // WaW (via subgroup instance domain)
