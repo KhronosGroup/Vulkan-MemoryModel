@@ -355,7 +355,7 @@ sig Exec {
   vissh = (stor[VISSHADER]) . (chains & (rc[(hb & sqf & avvisinc) . visqf]) . (rc[(hb & swg & avvisinc) . viswg]) . (rc[(hb & ssg & avvisinc) . vissg]))
   visdv = stor[VISDEVICE]
 
-  locord = ((R+W)->(R+W)) & sloc & // relates memory accesses to the same location
+  locord = sloc & // relates memory accesses to the same location
            ((hb & sthd & sref) + // single-thread case
             ((stor[R-PRIV]) . hb . (stor[R+W-PRIV])) + // RaR, WaR (non-private)
             ((stor[R]) . ^ssw . (stor[R+W])) + // RaR, WaR (any)
