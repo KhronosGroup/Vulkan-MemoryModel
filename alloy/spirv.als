@@ -370,9 +370,9 @@ sig Exec {
             (        (stor[W])      . (hb & avvisinc)     . avdv . (hb      ) .                               (stor[W])) +       // WaW (via device domain)
             (        (stor[W])      . (hb & avvisinc)     . avdv . (hb      ) . visdv . (hb & avvisinc)     . (stor[R])))        // RaW (via device domain)
 
-  // data race = same location, at least one is a write, different threads,
+  // data race = same location, at least one is a write, not equal,
   // not mutually ordered atomics, not location ordered either direction
-  dr = sloc & ((W -> W) + (W -> R) + (R -> W) - mutordatom - (sthd & sref) - rai[locord])
+  dr = sloc & ((W -> W) + (W -> R) + (R -> W) - mutordatom - iden - rai[locord])
 
   // visible to = location ordered W->R with no intervening write (W->W->R)
   visto = imm[(stor[W]) . locord] . (stor[R])
