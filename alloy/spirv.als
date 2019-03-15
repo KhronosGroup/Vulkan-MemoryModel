@@ -209,6 +209,13 @@ sig Exec {
   // PRIV is the complement of NONPRIV
   PRIV = R+W-NONPRIV
 
+  // Atomic operations are always considered non-private
+  A in NONPRIV
+
+  // Atomic operations implicitly have availability/visibility operations
+  (W&A) in AV
+  (R&A) in VIS
+
   // availability/visibility semantics in REL/ACQ only, respectively
   SEMAV in REL
   SEMVIS in ACQ
