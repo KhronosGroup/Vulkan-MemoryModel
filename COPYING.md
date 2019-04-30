@@ -1,4 +1,4 @@
-The files in, and generated output documents from this Vulkan-Docs
+The files in, and generated output documents from this Vulkan-MemoryModel
 project are under a mix of copyright and license statements. Refer to
 the individual files for specific information. As a general
 guideline:
