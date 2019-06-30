@@ -1,4 +1,4 @@
-# Copyright (c) 2017-2018 Khronos Group. This work is licensed under a
+# Copyright (c) 2017-2019 Khronos Group. This work is licensed under a
 # Creative Commons Attribution 4.0 International License; see
 # http://creativecommons.org/licenses/by/4.0/
 
@@ -21,7 +21,7 @@ Assert%: pre
 	@echo "$@"
 	@printf "open spirv\ncheck $@ for 8 but 1 Exec" > build/$@.als
 	@echo "NOSOLUTION" > build/$@.ref
-	@java -cp "alloy4.2_2015-02-22.jar$(JAVACPSEPARATOR)." RunCommandLine build/$@.als > build/$@.out
+	@java -cp "org.alloytools.alloy.dist-5.0.0-20190619.101010-34.jar$(JAVACPSEPARATOR)." RunCommandLine build/$@.als > build/$@.out
 	@diff --strip-trailing-cr build/$@.ref build/$@.out || echo "Test $@ failed"
 
 asserts: AssertLocordSameLoc AssertLocordAcyclic AssertLocordComplete1 AssertLocordComplete2 AssertVisTo
@@ -55,5 +55,5 @@ endif
 	$(eval test = $(notdir $<))
 	@echo $(test)
 	@./build/litmus.exe $(test) tests build
-	@java -cp "alloy4.2_2015-02-22.jar$(JAVACPSEPARATOR)." RunCommandLine build/$(test).gen > build/$(test).out
+	@java -cp "org.alloytools.alloy.dist-5.0.0-20190619.101010-34.jar$(JAVACPSEPARATOR)." RunCommandLine build/$(test).gen > build/$(test).out
 	@diff --strip-trailing-cr build/$(test).ref build/$(test).out || echo "Test $@ failed"
