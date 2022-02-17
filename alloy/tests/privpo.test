@@ -11,4 +11,4 @@ st.sc0 x = 1
 ld.sc0 x = 1
 st.nonpriv.sc0 x = 2
 SATISFIABLE consistent[X] && #dr=0
-NOSOLUTION (!consistent[X] || #dr>0)
+NOSOLUTION consistent[X] && #dr>0

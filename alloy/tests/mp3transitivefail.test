@@ -23,6 +23,6 @@ NEWTHREAD
 ld.atom.acq.scopewg.sc1.semsc0.semsc1.semvis w = 1
 ld.nonpriv.sc0 x
 NOSOLUTION consistent[X] && #dr=0
-SATISFIABLE (#RFINIT=0) && (!consistent[X] || #dr>0)
+SATISFIABLE consistent[X] && #dr>0
 NOSOLUTION NOCHAINS consistent[X] && #dr=0
-SATISFIABLE NOCHAINS (#RFINIT=0) && (!consistent[X] || #dr>0)
+SATISFIABLE NOCHAINS consistent[X] && #dr>0

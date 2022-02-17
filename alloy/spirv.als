@@ -30,6 +30,11 @@ fun stor[s : set E] : E -> E {
   s <: iden
 }
 
+// a chain of two or more hops through a relation
+fun twoplus[r : E -> E] : E -> E {
+  r.^r
+}
+
 // reduce a transitive relation to those immediately related
 fun imm[r : E -> E] : E -> E{
   r - (r.^r)
@@ -389,8 +394,8 @@ pred consistent[X:Exec] {
   // consistency: locord, rf, fr, asmo must not form cycles
   is_acyclic[X.locord + X.rf + X.fr + X.asmo]
 
-  // consistency: non-atomic reads must read-from a value that is still visible
-  X.rf . (stor[X.R-X.A]) in imm[(stor[X.W]) . (X.locord)]
+  // consistency: non-atomic cannot read-from a value that is shadowed by another write
+  no (X.rf . (stor[X.R - X.A])) & twoplus[stor[X.W] . (X.locord)]
 }
 
 pred racefree[X:Exec] {
