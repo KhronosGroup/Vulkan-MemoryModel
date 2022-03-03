@@ -13,4 +13,4 @@ ld.vis.scopedev.sc1 y
 SSW 0 1
 SLOC x y
 NOSOLUTION consistent[X] && #dr=0
-SATISFIABLE (#RFINIT=0) && (!consistent[X] || #dr>0)
+SATISFIABLE consistent[X] && #dr>0

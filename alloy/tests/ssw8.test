@@ -15,4 +15,4 @@ membar.acq.semvis.scopeqf.semsc0
 ld.nonpriv.sc0 x
 SSW 0 1
 SATISFIABLE consistent[X] && #dr=0
-NOSOLUTION (#RFINIT=0) && (!consistent[X] || #dr>0)
+NOSOLUTION consistent[X] && #dr>0

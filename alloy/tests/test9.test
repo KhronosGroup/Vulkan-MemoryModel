@@ -18,4 +18,4 @@ NEWTHREAD
 ld.atom.acq.scopedev.sc1.semsc0 b = 1
 ld.vis.scopedev.sc0 a
 SATISFIABLE consistent[X] && #dr=0
-NOSOLUTION (#RFINIT=0) && (!consistent[X] || #dr>0)
+NOSOLUTION consistent[X] && #dr>0

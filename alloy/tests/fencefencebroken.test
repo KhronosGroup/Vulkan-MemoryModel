@@ -15,4 +15,4 @@ ld.atom.scopedev.sc0 y = 1
 membar.acq.scopewg.semsc0
 ld.vis.scopedev.sc0 x
 NOSOLUTION consistent[X] && #dr=0
-SATISFIABLE #dr>0
+SATISFIABLE consistent[X] && #dr>0

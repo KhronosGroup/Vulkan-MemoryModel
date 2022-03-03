@@ -16,4 +16,4 @@ NEWTHREAD
 ld.atom.acq.scopeqf.sc0.semsc0 y = 1
 ld.vis.scopeqf.sc0 x
 NOSOLUTION consistent[X] && #dr=0
-SATISFIABLE (#RFINIT=0) && (!consistent[X] || #dr>0)
+SATISFIABLE consistent[X] && #dr>0

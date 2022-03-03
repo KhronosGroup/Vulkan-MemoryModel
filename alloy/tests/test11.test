@@ -14,4 +14,4 @@ cbar.acq.rel.scopewg.semsc0.semsc1 0
 st.av.scopedev.sc1 b = 1
 SLOC a b
 SATISFIABLE consistent[X] && #dr=0
-NOSOLUTION (#RFINIT!=0) && (!consistent[X] || #dr>0)
+NOSOLUTION consistent[X] && #dr>0

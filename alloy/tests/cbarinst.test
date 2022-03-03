@@ -14,4 +14,4 @@ cbar.scopewg 1
 cbar.scopewg 2
 cbar.scopewg 3
 SATISFIABLE consistent[X] && #dr=0
-NOSOLUTION !consistent[X] || #dr>0
+NOSOLUTION consistent[X] && #dr>0

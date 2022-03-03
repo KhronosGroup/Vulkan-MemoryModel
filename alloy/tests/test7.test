@@ -22,4 +22,4 @@ NEWTHREAD
 cbar.acq.rel.scopewg.semsc0 2
 ld.vis.scopedev.sc0 a
 NOSOLUTION consistent[X] && #dr=0
-SATISFIABLE (#RFINIT=0) && (!consistent[X] || #dr>0)
+SATISFIABLE consistent[X] && #dr>0
