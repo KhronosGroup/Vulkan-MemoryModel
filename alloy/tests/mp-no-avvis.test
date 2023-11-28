@@ -2,11 +2,11 @@
 NEWWG
 NEWSG
 NEWTHREAD
-st.scopedev.sc0 x = 1
+st.sc0 x = 1
 st.atom.rel.scopewg.sc0.semsc0 y = 1
 NEWSG
 NEWTHREAD
 ld.atom.acq.scopewg.sc0.semsc0 y = 1
-ld.scopedev.sc0 x = 0
+ld.sc0 x = 0
 SATISFIABLE consistent[X]
 NOSOLUTION consistent[X] && #dr=0

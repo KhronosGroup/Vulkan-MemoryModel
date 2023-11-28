@@ -2,11 +2,11 @@
 NEWWG
 NEWSG
 NEWTHREAD
-st.scopedev.sc0 x = 1
+st.sc0 x = 1
 NEWWG
 NEWSG
 NEWTHREAD
-st.scopedev.sc0 x = 2
+st.sc0 x = 2
 NEWWG
 NEWSG
 NEWTHREAD
