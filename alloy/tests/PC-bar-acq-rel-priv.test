@@ -1,0 +1,13 @@
+// Producer-Consumer pattern using named barriers. 
+// Load and store are private and thus not in locord. 
+// Barriers are acq_rel and thus they are in sw.
+NEWWG
+NEWSG
+NEWTHREAD
+ld.sc0 x = 1
+cbar.acq.rel.scopewg.semsc0 0
+NEWTHREAD
+cbar.acq.rel.scopewg.semsc0 0
+st.sc0 x = 1
+SATISFIABLE consistent[X]
+SATISFIABLE #dr>0
