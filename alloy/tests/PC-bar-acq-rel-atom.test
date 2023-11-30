@@ -1,0 +1,13 @@
+// Producer-Consumer pattern using named barriers. 
+// Atomic operations are non-private and thus the load and store are in locord. 
+// Barriers are acq_rel and thus they are in sw.
+NEWWG
+NEWSG
+NEWTHREAD
+ld.atom.scopewg.sc0 x = 1
+cbar.acq.rel.scopewg.semsc0 0
+NEWTHREAD
+cbar.acq.rel.scopewg.semsc0 0
+st.atom.scopewg.sc0 x = 1
+NOSOLUTION consistent[X] && #dr=0
+NOSOLUTION #dr>0

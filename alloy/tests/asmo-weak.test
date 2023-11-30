@@ -1,0 +1,21 @@
+// Test if thread 3 and thread 4 can read updates to x in conflicting order
+NEWWG
+NEWSG
+NEWTHREAD
+st.sc0 x = 1
+NEWWG
+NEWSG
+NEWTHREAD
+st.sc0 x = 2
+NEWWG
+NEWSG
+NEWTHREAD
+ld.atom.scopedev.sc0 x = 1
+ld.atom.scopedev.sc0 x = 2
+NEWWG
+NEWSG
+NEWTHREAD
+ld.atom.scopedev.sc0 x = 2
+ld.atom.scopedev.sc0 x = 1
+SATISFIABLE consistent[X] && #dr>0
+SATISFIABLE consistent[X]

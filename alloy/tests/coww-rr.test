@@ -1,0 +1,13 @@
+// Non-atomic memory operations may be observed by one thread in a different order than they were written by another thread
+NEWWG
+NEWSG
+NEWTHREAD
+st.sc0 x = 1
+st.sc0 x = 2
+NEWWG
+NEWSG
+NEWTHREAD
+ld.sc0 x = 2
+ld.sc0 x = 1
+SATISFIABLE consistent[X]
+NOSOLUTION consistent[X] && #dr=0
