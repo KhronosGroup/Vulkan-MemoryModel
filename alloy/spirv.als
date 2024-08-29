@@ -305,12 +305,6 @@ sig Exec {
   rs = (stor[REL&A]) . *((imm[asmo]) . (stor[R&W]))
   hypors = (stor[W&A]) . *((imm[asmo]) . (stor[R&W]))
 
-  // From-read (aka reads-before) are (read,write) pairs where the read reads a
-  // value before the write in atomic modification order (i.e. the inverse of
-  // reads-from joined with asmo). For reads that read-from init, they
-  // from-read all writes at the same location.
-  fr = (~rf . asmo) + ((stor[RFINIT]) . sloc . (stor[W])) - iden
-
   // synchronizes-with is similar to C++, with an additional case for fence->cbar->cbar->fence
   sw = inscope & (
        // atomic->atomic
@@ -381,6 +375,12 @@ sig Exec {
             (sref & ((stor[W-PRIV]) . (rc[po] & avvisinc) . avsh . (hb      ) . vissh . (rc[po] & avvisinc) . (stor[R-PRIV]))) + // RaW (via shader domain)
             (        (stor[W])      . (hb & avvisinc)     . avdv . (hb      ) .                               (stor[W])) +       // WaW (via device domain)
             (        (stor[W])      . (hb & avvisinc)     . avdv . (hb      ) . visdv . (hb & avvisinc)     . (stor[R])))        // RaW (via device domain)
+
+  // From-read (aka reads-before) are (read,write) pairs where the read reads a
+  // value before the write in atomic modification order or ordered writes to the same location
+  // (i.e. the inverse of reads-from joined with asmo or locord).
+  // For reads that read-from init, they from-read all writes at the same location.
+  fr = (~rf . ((W -> W) & locord)) + (~rf . asmo) + ((stor[RFINIT]) . sloc . (stor[W])) - iden
 
   // data race = same location, at least one is a write, not equal,
   // not mutually ordered atomics, not location ordered either direction
