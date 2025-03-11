@@ -153,18 +153,22 @@ sig Exec {
   // inverse) and add the identity over R+W
   sref = ^(rai[pgmsref]) + stor[R+W]
 
-  // Currently, all av/vis ops to device domain are assumed to include all references.
-  // Semav/vis ops with SEMSCi apply to all ops in SCi, except themselves (e.g. atomic
-  // write doesn't make itself available because the av op happens before the atomic write,
-  // hence the "- iden").
+  // AVDEVICE operation applies to all operations that are ordered before
+  // the current operation, but not to the current operation itself.
+  // VISDEVICE operation applies to all operations that are ordered after
+  // the current operation, but not to the current operation itself.
+  // SEMAV operation with SEMSCi applies to all operations in SCi that are ordered before
+  // the current operation, but not to the current operation itself.
+  // SEMVIS operation with SEMSCi applies to all operations in SCi that are ordered after
+  // the current operation, but not to the current operation itself.
   // AV+VIS ops (per-instruction) are avvisinc with themselves (av/vis op happens in the right order)
   // and with those operations on the same reference.
   // Note that this complexity exists in part because we don't split out implicit av/vis
   // ops as distinct instructions.
-  avvisinc = (rai[((SC0+SC1)->(AVDEVICE+VISDEVICE)) +
-                   (SC0->((SEMAV+SEMVIS)&SEMSC0)) +
-                   (SC1->((SEMAV+SEMVIS)&SEMSC1))]) - iden +
-              (rai[stor[AV+VIS] . (sref & sloc)])
+  avvisinc = ((SC0+SC1)->AVDEVICE) + (VISDEVICE->(SC0+SC1)) +
+             (SC0->(SEMSC0&SEMAV)) + ((SEMSC0&SEMVIS)->SC0) +
+             (SC1->(SEMSC1&SEMAV)) + ((SEMSC1&SEMVIS)->SC1) +
+             (rai[stor[AV+VIS] . (sref & sloc)])
 
   // same thread is a subset of same subgroup which is a subset of same workgroup
   sthd in ssg
