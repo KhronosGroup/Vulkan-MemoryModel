@@ -107,6 +107,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cassert>
+#include <cmath>
 
 using namespace std;
 
@@ -341,6 +342,7 @@ int main(int argc, char *argv[])
 
     int threadnum = 0;
     int numEvents = 0;
+    int bitwidth = 0;
 
     vector<string> sswInputs;
     vector<string> slocInputs;
@@ -480,6 +482,7 @@ int main(int argc, char *argv[])
     }
 
     numEvents = instnum+1;
+    bitwidth = ceil(log2(numEvents * numEvents + 1) + 1);
 
     stringstream ssw;
     for (size_t i = 0; i < sswInputs.size(); ++i) {
@@ -670,7 +673,10 @@ int main(int argc, char *argv[])
         outals << "  }\n";
         outals << "  " << line << "\n";
         outals << "}\n";
-        outals << "run gentest" << testnum << " for " << numEvents << "\n";
+        outals << "run gentest" << testnum << " ";
+        outals << "for exactly 1 spirv/Exec, ";
+        outals << "exactly " << numEvents << " spirv/E, ";
+        outals << bitwidth << " int" << "\n";
         testnum++;
     }
 
