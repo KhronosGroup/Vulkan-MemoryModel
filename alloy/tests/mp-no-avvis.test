@@ -1,0 +1,12 @@
+// Rel/Acq alone is not enough to forbid the behavior
+NEWWG
+NEWSG
+NEWTHREAD
+st.sc0 x = 1
+st.atom.rel.scopewg.sc0.semsc0 y = 1
+NEWSG
+NEWTHREAD
+ld.atom.acq.scopewg.sc0.semsc0 y = 1
+ld.sc0 x = 0
+SATISFIABLE consistent[X]
+NOSOLUTION consistent[X] && #dr=0
